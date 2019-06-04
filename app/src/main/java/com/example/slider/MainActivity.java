@@ -6,16 +6,18 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
-
+public class MainActivity extends AppCompatActivity implements Slider.SliderChangeListener {
 
     Slider mSlider;
     TextView mTextView;
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        Slider.setSliderChangeListener(this);//NEW
 
         mSlider = findViewById(R.id.myslider);
         mTextView = findViewById(R.id.myvalue);

@@ -8,8 +8,8 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.util.Pair;
 import android.util.TypedValue;
+import android.view.MotionEvent;
 import android.view.View;
 
 public class Slider extends View {
@@ -52,6 +52,7 @@ public class Slider extends View {
 
     /**
      * Constructeur dynamique
+     *
      * @param context
      */
     public Slider(Context context) {
@@ -61,6 +62,7 @@ public class Slider extends View {
 
     /**
      * Constructeur statique
+     *
      * @param context
      * @param attributeSet
      */
@@ -125,20 +127,17 @@ public class Slider extends View {
         mValueBarPaint.setStrokeWidth(mBarWidth);
 
         // initialisation des dimensions minimales
-        int minWidth = (int) dpToPixel(MIN_CURSOR_DIAMETER)+ getPaddingTop() + getPaddingBottom();
+        int minWidth = (int) dpToPixel(MIN_CURSOR_DIAMETER) + getPaddingTop() + getPaddingBottom();
         int minHeight = (int) dpToPixel(MIN_BAR_LENGTH + MIN_CURSOR_DIAMETER) + getPaddingLeft() + getPaddingRight();
 
 
         // fixe les dimensions minimales suggérées à Android pour ce slider
         // ces dimensions correspondent à la taille du canvas (objet + padding)
-        setMinimumHeight(minHeight );
+        setMinimumHeight(minHeight);
         setMinimumWidth(minWidth);
 
 
-
     }
-
-
 
 
     /**
@@ -146,10 +145,10 @@ public class Slider extends View {
      *
      * @param widthMeasureSpec  : largeur spécifiée par Android pour le slider
      * @param heightMeasureSpec : hauteur spécifiée par Android
-     *
+     *                          <p>
      *                          les valeurs spécifiées sont composites : une partie indique la dimension en pixel et
      *                          l'autre indique EXACTLY(dimension fixée), UNSPECIFIED(dimension laissée à la discrétion du slider) ou AT_MOST(dimension maxi)
-     *
+     *                          <p>
      *                          onMeasure modifie les dimensions des éléments du Slider pour se conformer à l'espace alloué
      *                          par Android tout en conservant le padding.
      */
@@ -175,7 +174,6 @@ public class Slider extends View {
 
         setMeasuredDimension(width, height);
     }
-
 
 
     /**
@@ -212,7 +210,6 @@ public class Slider extends View {
      * Méthode appelée au début de onDraw pour réduire les dimensions du slider ou du padding
      * afin de respecter l'espace alloué par le gestionnaire de layout. Si une réduction est opérée
      * le slider se retrouve centré horizontalement (rightPadding = leftPadding).
-     *
      */
     private void reconciliateDims() {
 
@@ -223,49 +220,46 @@ public class Slider extends View {
         float availableForPadding;
 
         // largeur insuffisante même sans padding
-        if(getWidth()<dpToPixel(MIN_CURSOR_DIAMETER)){
+        if (getWidth() < dpToPixel(MIN_CURSOR_DIAMETER)) {
             mCursorDiameter = getWidth();
             paddingLeft = paddingRight = 0;
         }
         // largeur insuffisante avec padding mais suffisante sans
-        else if(getWidth()-getPaddingLeft()-getPaddingRight()<dpToPixel(MIN_CURSOR_DIAMETER)){
+        else if (getWidth() - getPaddingLeft() - getPaddingRight() < dpToPixel(MIN_CURSOR_DIAMETER)) {
             mCursorDiameter = dpToPixel(MIN_CURSOR_DIAMETER);
             availableForPadding = getWidth() - mCursorDiameter;
-            paddingLeft *= (availableForPadding/(getPaddingLeft()+getPaddingRight()));
-            paddingRight *= (availableForPadding/(getPaddingLeft()+getPaddingRight()));
+            paddingLeft *= (availableForPadding / (getPaddingLeft() + getPaddingRight()));
+            paddingRight *= (availableForPadding / (getPaddingLeft() + getPaddingRight()));
         }
         // largeur suffisante et curseur trop petit
-        else if (mCursorDiameter<dpToPixel(MIN_CURSOR_DIAMETER)){
-             mCursorDiameter = dpToPixel(MIN_CURSOR_DIAMETER);
+        else if (mCursorDiameter < dpToPixel(MIN_CURSOR_DIAMETER)) {
+            mCursorDiameter = dpToPixel(MIN_CURSOR_DIAMETER);
         }
 
 
         // adaptation de la largeur glissière pour être conforme.
-        mBarWidth = Math.min(mBarWidth,getWidth()-paddingLeft-paddingRight);
-
+        mBarWidth = Math.min(mBarWidth, getWidth() - paddingLeft - paddingRight);
 
 
         // hauteur insuffisante même sans padding
-        if(getHeight()<mCursorDiameter+dpToPixel(MIN_BAR_LENGTH)){
-            mBarLength = Math.max(getHeight()-mCursorDiameter,0);
+        if (getHeight() < mCursorDiameter + dpToPixel(MIN_BAR_LENGTH)) {
+            mBarLength = Math.max(getHeight() - mCursorDiameter, 0);
             paddingBottom = paddingTop = 0;
         }
 
         // hauteur insuffisante avec padding mais suffisante sans
-        else if(getHeight()-getPaddingTop()-getPaddingBottom()<dpToPixel(MIN_BAR_LENGTH)){
+        else if (getHeight() - getPaddingTop() - getPaddingBottom() < dpToPixel(MIN_BAR_LENGTH)) {
             mBarLength = dpToPixel(MIN_BAR_LENGTH);
             availableForPadding = getHeight() - mBarLength;
-            paddingTop *= (availableForPadding/(getPaddingTop()+getPaddingBottom()));
-            paddingBottom *= (availableForPadding/(getPaddingTop()+getPaddingBottom()));
-        }
-        else if(mBarLength<dpToPixel(MIN_BAR_LENGTH)){
+            paddingTop *= (availableForPadding / (getPaddingTop() + getPaddingBottom()));
+            paddingBottom *= (availableForPadding / (getPaddingTop() + getPaddingBottom()));
+        } else if (mBarLength < dpToPixel(MIN_BAR_LENGTH)) {
             mBarLength = dpToPixel(MIN_BAR_LENGTH);
         }
 
 
-        setPadding((int)paddingLeft,(int)paddingTop,(int)paddingRight,(int) paddingBottom);
+        setPadding((int) paddingLeft, (int) paddingTop, (int) paddingRight, (int) paddingBottom);
     }
-
 
 
     /**
@@ -324,6 +318,35 @@ public class Slider extends View {
         return ratio * (mMax - mMin) + mMin;
     }
 
+    /*************************************************************************************/
+    /*                                       Gestion des événements                      */
+
+    /*************************************************************************************/
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_MOVE:
+                setValue(toValue(new Point((int) event.getX(), (int) event.getY())));
+                break;
+            default:
+                ;
+        }
+        invalidate();
+        return true;
+    }
+
+
+    public interface SliderChangeListener {
+
+    }
+
+    SliderChangeListener mSliderChangeListener;
+
+    public void setSliderChangeListener(SliderChangeListener sliderListener) {
+        mSliderChangeListener = sliderListener;
+    }
 
     /*************************************************************************************/
     /*                                       SETTERS et GETTERS                          */
