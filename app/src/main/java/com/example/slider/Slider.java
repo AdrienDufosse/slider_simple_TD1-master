@@ -277,7 +277,7 @@ public class Slider extends View {
         float ratio = (position.y - getPaddingTop() - mCursorDiameter / 2) / mBarLength;
         if (ratio < 0) ratio = 0;
         if (ratio > 1) ratio = 1;
-        return ratioToValue(ratio);
+        return ratioToValue(1-ratio);
     }
 
 
@@ -328,6 +328,11 @@ public class Slider extends View {
 
     /*************************************************************************************/
 
+    /**
+     *
+     * @param event
+     * @return
+     */
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()) {
@@ -338,17 +343,18 @@ public class Slider extends View {
                 mSliderChangeListener.onChange(newValue);
                 break;
         }
-
         invalidate();
-
         return true;
     }
-
 
     public interface SliderChangeListener {
         public void onChange(float newValue);
     }
 
+    /**
+     *
+     * @param sliderListener
+     */
     public void setSliderChangeListener(SliderChangeListener sliderListener) {
         mSliderChangeListener = sliderListener;
     }
