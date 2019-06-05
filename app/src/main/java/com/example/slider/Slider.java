@@ -49,6 +49,9 @@ public class Slider extends View {
     // Borne max
     private float mMax = 100;
 
+    //Listener
+    private SliderChangeListener mSliderChangeListener;
+
 
     /**
      * Constructeur dynamique
@@ -135,6 +138,8 @@ public class Slider extends View {
         // ces dimensions correspondent à la taille du canvas (objet + padding)
         setMinimumHeight(minHeight);
         setMinimumWidth(minWidth);
+
+
 
 
     }
@@ -325,24 +330,24 @@ public class Slider extends View {
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-
         switch (event.getAction()) {
             case MotionEvent.ACTION_MOVE:
-                setValue(toValue(new Point((int) event.getX(), (int) event.getY())));
+                Point point = new Point((int) event.getX(), (int) event.getY());
+                float newValue = toValue(point);
+                setValue(newValue);
+                mSliderChangeListener.onChange(newValue);
                 break;
-            default:
-                ;
         }
+
         invalidate();
+
         return true;
     }
 
 
     public interface SliderChangeListener {
-
+        public void onChange(float newValue);
     }
-
-    SliderChangeListener mSliderChangeListener;
 
     public void setSliderChangeListener(SliderChangeListener sliderListener) {
         mSliderChangeListener = sliderListener;
