@@ -7,16 +7,64 @@
     tools:context=".BTConnectActivity">
 
     <LinearLayout
-        android:id="@+id/layoutBTConnectActivity"
-        android:layout_width="395dp"
-        android:layout_height="715dp"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
-        android:orientation="horizontal"
+        android:layout_marginBottom="8dp"
+        android:orientation="vertical"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></LinearLayout>
+        app:layout_constraintTop_toTopOf="parent">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#112AA5"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme" />
+
+        <TextView
+            android:id="@+id/textView_appareils_appaires"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#3D58DD"
+            android:text=" Appareils appairés"
+            android:textColor="#E4FFFFFF"
+            android:textSize="18sp" />
+
+        <ListView
+            android:id="@+id/listView_app_appaires"
+            android:layout_width="match_parent"
+            android:layout_height="120dp">
+
+        </ListView>
+
+        <TextView
+            android:id="@+id/textView_appareil_decouverts"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#3D58DD"
+            android:text=" Appareils découverts"
+            android:textColor="#E4FFFFFF"
+            android:textSize="18sp" />
+
+        <ListView
+            android:id="@+id/listView_appareils_decouverts"
+            android:layout_width="match_parent"
+            android:layout_height="122dp" />
+
+        <ImageButton
+            android:id="@+id/imageButton_search"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:srcCompat="@android:drawable/ic_menu_search" />
+
+    </LinearLayout>
+
 </android.support.constraint.ConstraintLayout>
