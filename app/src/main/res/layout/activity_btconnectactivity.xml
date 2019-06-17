@@ -7,6 +7,7 @@
     tools:context=".BTConnectActivity">
 
     <LinearLayout
+        android:id="@+id/BTLinearLayout"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="8dp"
@@ -22,7 +23,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
+            android:id="@+id/BTtoolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="#112AA5"

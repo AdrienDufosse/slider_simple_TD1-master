@@ -69,7 +69,8 @@ public class MainActivity extends AppCompatActivity implements Slider.SliderChan
         switch (menuItem) {
             case R.id.ButtonBluetoothConnection:
                 switch (BluetoothRights()) {
-
+                    case 1 : onBluetoothConfigRequest(false);
+                    break;
                 }
         }
         return true;
