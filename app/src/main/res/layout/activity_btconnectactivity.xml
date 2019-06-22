@@ -40,7 +40,7 @@
             android:textColor="#E4FFFFFF"
             android:textSize="18sp" />
 
-        <ListView
+    <ListView
             android:id="@+id/listView_app_appaires"
             android:layout_width="match_parent"
             android:layout_height="120dp">
@@ -69,6 +69,12 @@
 
         </ImageButton>
 
-    </LinearLayout>
+    <ProgressBar
+        android:id="@+id/BTProgress"
+        style="?android:attr/progressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+</LinearLayout>
 
 <!--</android.support.constraint.ConstraintLayout>-->

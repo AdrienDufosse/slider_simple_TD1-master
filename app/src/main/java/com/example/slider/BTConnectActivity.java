@@ -11,9 +11,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
+import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import java.util.Set;
 
@@ -21,15 +23,22 @@ public class BTConnectActivity extends AppCompatActivity {
 
     ArrayAdapter itemsAdapter1;
     ArrayAdapter itemsAdapter2;
+    BluetoothAdapter mBTAdapter;
+    Set<BluetoothDevice> pairedDevices;
+    ProgressBar progress;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_btconnectactivity);
 
-        Toolbar toolbar = findViewById(R.id.BTtoolbar);
+        toolbar = findViewById(R.id.BTtoolbar);
         setSupportActionBar(toolbar);
 
+        progress = findViewById(R.id.BTProgress);
+        mBTAdapter = BluetoothAdapter.getDefaultAdapter();
+        pairedDevices = mBTAdapter.getBondedDevices();
         /*Affichage des périfériques déjà enregistrés*/
         AffichagePeripheriqueAppaire();
 
@@ -40,21 +49,28 @@ public class BTConnectActivity extends AppCompatActivity {
         IntentFilter filter1 = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         IntentFilter filter2 = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
 
-        registerReceiver(ouverture_bluetooth, filter1);
-        registerReceiver(ouverture_bluetooth, filter2);
+        this.registerReceiver(ouverture_bluetooth, filter1);
+        this.registerReceiver(ouverture_bluetooth, filter2);
 
         ListView viewBTRecherche = findViewById(R.id.listView_appareils_decouverts);
         viewBTRecherche.setAdapter(itemsAdapter2);
     }
 
-    final BroadcastReceiver ouverture_bluetooth = new BroadcastReceiver() {
+    private final BroadcastReceiver ouverture_bluetooth = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             BluetoothDevice deviceBT;
             String action = intent.getAction();
+
             switch (action) {
-                case BluetoothDevice.ACTION_FOUND : deviceBT = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                case BluetoothDevice.ACTION_FOUND:
+                    deviceBT = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    progress.setVisibility(View.VISIBLE);
                     itemsAdapter2.add(deviceBT.getName() + "\n" + deviceBT.getAddress());
+                    break;
+                case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
+                    progress.setVisibility(View.INVISIBLE);
+                    break;
             }
         }
     };
@@ -64,8 +80,6 @@ public class BTConnectActivity extends AppCompatActivity {
         ListView viewBTAppaire = findViewById(R.id.listView_app_appaires);
         viewBTAppaire.setAdapter(itemsAdapter1);//liaison de l'adapter à la view
 
-        BluetoothAdapter mBTAdapter = BluetoothAdapter.getDefaultAdapter();
-        Set<BluetoothDevice> pairedDevices = mBTAdapter.getBondedDevices();
         //affichage des appareils appairés, s'il en existe
         if (pairedDevices.size() > 0) {
             for (BluetoothDevice device : pairedDevices) {
@@ -75,7 +89,6 @@ public class BTConnectActivity extends AppCompatActivity {
     }
 
     private void RecherchePeripherique() {
-        BluetoothAdapter mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         if (mBTAdapter.isDiscovering()) {
             mBTAdapter.cancelDiscovery();
         }
