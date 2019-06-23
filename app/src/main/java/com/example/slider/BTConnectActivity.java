@@ -12,10 +12,15 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.text.Layout;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ProgressBar;
+import android.widget.Toast;
+import android.widget.AdapterView.OnItemClickListener;
 
 import java.util.Set;
 
@@ -27,6 +32,10 @@ public class BTConnectActivity extends AppCompatActivity {
     Set<BluetoothDevice> pairedDevices;
     ProgressBar progress;
     Toolbar toolbar;
+    ImageButton search;
+    boolean youCanClick = false;
+    ListView viewBTAppaire;
+    ListView viewBTRecherche;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,26 +43,48 @@ public class BTConnectActivity extends AppCompatActivity {
         setContentView(R.layout.activity_btconnectactivity);
 
         toolbar = findViewById(R.id.BTtoolbar);
+        toolbar.setTitle("Oscilloscope");
         setSupportActionBar(toolbar);
 
         progress = findViewById(R.id.BTProgress);
         mBTAdapter = BluetoothAdapter.getDefaultAdapter();
         pairedDevices = mBTAdapter.getBondedDevices();
+
+        search = findViewById(R.id.BTsearch);
+
         /*Affichage des périfériques déjà enregistrés*/
         AffichagePeripheriqueAppaire();
 
         /*recherche de périphériques*/
-        itemsAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
         RecherchePeripherique();
 
-        IntentFilter filter1 = new IntentFilter(BluetoothDevice.ACTION_FOUND);
-        IntentFilter filter2 = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        /*relancer la recherche de périfériques*/
+        search.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (youCanClick) {
+                    RecherchePeripherique();
+                }
+            }
+        });
 
-        this.registerReceiver(ouverture_bluetooth, filter1);
-        this.registerReceiver(ouverture_bluetooth, filter2);
+        /*sélection de l'item*/
+        viewBTAppaire.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String item = (String) parent.getItemAtPosition(position);
+                Toast.makeText(BTConnectActivity.this, "Sélection : " + item, Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        ListView viewBTRecherche = findViewById(R.id.listView_appareils_decouverts);
-        viewBTRecherche.setAdapter(itemsAdapter2);
+        viewBTRecherche.setOnItemClickListener(new OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                String item = (String) parent.getItemAtPosition(position);
+                Toast.makeText(BTConnectActivity.this, "Sélection : " + item, Toast.LENGTH_SHORT).show();
+            }
+        });
+
     }
 
     private final BroadcastReceiver ouverture_bluetooth = new BroadcastReceiver() {
@@ -70,6 +101,9 @@ public class BTConnectActivity extends AppCompatActivity {
                     break;
                 case BluetoothAdapter.ACTION_DISCOVERY_FINISHED:
                     progress.setVisibility(View.INVISIBLE);
+                    unregisterReceiver(ouverture_bluetooth);//le broadCastReceiver est désabonné
+                    mBTAdapter.cancelDiscovery();
+                    youCanClick = true;
                     break;
             }
         }
@@ -77,7 +111,7 @@ public class BTConnectActivity extends AppCompatActivity {
 
     private void AffichagePeripheriqueAppaire() {
         itemsAdapter1 = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
-        ListView viewBTAppaire = findViewById(R.id.listView_app_appaires);
+        viewBTAppaire = findViewById(R.id.listView_app_appaires);
         viewBTAppaire.setAdapter(itemsAdapter1);//liaison de l'adapter à la view
 
         //affichage des appareils appairés, s'il en existe
@@ -89,9 +123,21 @@ public class BTConnectActivity extends AppCompatActivity {
     }
 
     private void RecherchePeripherique() {
+        youCanClick = false;
         if (mBTAdapter.isDiscovering()) {
             mBTAdapter.cancelDiscovery();
         }
         mBTAdapter.startDiscovery();
+
+        itemsAdapter2 = new ArrayAdapter(this, android.R.layout.simple_list_item_1);
+
+        IntentFilter filter1 = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        IntentFilter filter2 = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+
+        this.registerReceiver(ouverture_bluetooth, filter1);
+        this.registerReceiver(ouverture_bluetooth, filter2);
+
+        viewBTRecherche = findViewById(R.id.listView_appareils_decouverts);
+        viewBTRecherche.setAdapter(itemsAdapter2);
     }
 }
