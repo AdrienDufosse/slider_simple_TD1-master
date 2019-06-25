@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -69,8 +70,9 @@ public class MainActivity extends AppCompatActivity implements Slider.SliderChan
         switch (menuItem) {
             case R.id.ButtonBluetoothConnection:
                 switch (BluetoothRights()) {
-                    case 1 : onBluetoothConfigRequest(false);
-                    break;
+                    case 1:
+                        onBluetoothConfigRequest(false);
+                        break;
                 }
         }
         return true;
@@ -130,6 +132,21 @@ public class MainActivity extends AppCompatActivity implements Slider.SliderChan
         } else {
             BTConnect = new Intent(this, BTConnectActivity.class);
             startActivityForResult(BTConnect, BT_CONNECT_CODE);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK) {
+            String adr_info = data.getStringExtra("BTAddress");
+            String info = data.getStringExtra("BTDevice");
+            Toast.makeText(this,"Appareil : " + info, Toast.LENGTH_SHORT).show();
+
+        }
+        else {
+            Toast.makeText(this,"fichtre, c'est vide", Toast.LENGTH_SHORT).show();
         }
     }
 }

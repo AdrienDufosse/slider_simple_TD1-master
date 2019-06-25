@@ -14,7 +14,8 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".BTConnectActivity"
-            android:theme="@style/AppTheme.Dialog">
+            android:theme="@style/AppTheme.Dialog"
+            android:configChanges="keyboardHidden|orientation">
         </activity>
 
         <activity android:name=".MainActivity">

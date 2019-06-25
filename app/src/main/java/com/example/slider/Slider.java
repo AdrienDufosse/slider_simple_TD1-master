@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v4.content.ContextCompat;
 import android.util.AttributeSet;
@@ -107,7 +109,6 @@ public class Slider extends View {
         mBarPaint.setStrokeCap(Paint.Cap.ROUND);
         mValueBarPaint.setStrokeCap(Paint.Cap.ROUND);
 
-
         // default colors
         mDisabledColor = ContextCompat.getColor(context, R.color.colorDisabled);
         mCursorColor = ContextCompat.getColor(context, R.color.colorAccent);
@@ -133,15 +134,10 @@ public class Slider extends View {
         int minWidth = (int) dpToPixel(MIN_CURSOR_DIAMETER) + getPaddingTop() + getPaddingBottom();
         int minHeight = (int) dpToPixel(MIN_BAR_LENGTH + MIN_CURSOR_DIAMETER) + getPaddingLeft() + getPaddingRight();
 
-
         // fixe les dimensions minimales suggérées à Android pour ce slider
         // ces dimensions correspondent à la taille du canvas (objet + padding)
         setMinimumHeight(minHeight);
         setMinimumWidth(minWidth);
-
-
-
-
     }
 
 
@@ -164,9 +160,7 @@ public class Slider extends View {
         Log.i("MEASURE", MeasureSpec.toString(widthMeasureSpec));
         Log.i("MEASURE", MeasureSpec.toString(heightMeasureSpec));
 
-
         int suggestedWidth, suggestedHeight, width, height;
-
 
         // la dimension souhaitée est ajustée pour au moins atteindre la dimension minimale acceptable
         suggestedWidth = Math.max(getSuggestedMinimumWidth(), (int) Math.max(mCursorDiameter, mBarWidth) + getPaddingLeft() + getPaddingRight());
@@ -178,6 +172,9 @@ public class Slider extends View {
         height = resolveSize(suggestedHeight, heightMeasureSpec);
 
         setMeasuredDimension(width, height);
+
+        //Initialisation de la valeur affichée à 50
+        mSliderChangeListener.onChange(50);
     }
 
 
@@ -429,5 +426,91 @@ public class Slider extends View {
         invalidate();
     }
 
+    /*************************************************************************************/
+    /*                        GESTION DE LA PERSISTANCE D'ETAT                           */
+    /*************************************************************************************/
 
+    /**
+     * Méthode appelée lors d'un changement de configuration (Pour chaque View, cette méthode est
+     * appelée afin de gérer la persistance en interne et alléger ainsi l'activité)
+     * @return
+     */
+    @Override
+    protected Parcelable onSaveInstanceState() {
+        // récupération des données déja agglomérées par ce View et ajout de mValue
+        return new SavedState(super.onSaveInstanceState(), mValue);
+    }
+
+    /**
+     * Appelé lors de la restitution de l'état
+     * @param state instance de SavedState contenant l'ensemble des données à restituer
+     */
+    @Override
+    protected void onRestoreInstanceState(Parcelable state) {
+        if (!(state instanceof SavedState)) {
+            super.onRestoreInstanceState(state);
+            return;
+        }
+        mValue = ((SavedState) state).sliderValue;
+        super.onRestoreInstanceState(((SavedState) state).getSuperState());
+        Log.i("RESTORE", "state restored with " + mValue);
+    }
+
+    /**
+     * Cette classe interne stocke les états. Elle est Parcelable afin d'être persistée en mémoire interne
+     */
+    static class SavedState extends BaseSavedState {
+
+        private float sliderValue;
+
+        /**
+         * L'objet Parcelable.Creator fournit une Factory permettant de reconstrure un objet à partir d'un Parcel
+         */
+        public static final Parcelable.Creator<SavedState> CREATOR =
+                new Parcelable.Creator<SavedState>() {
+                    public SavedState createFromParcel(Parcel in) {
+                        return new SavedState(in);
+                    }
+
+                    public SavedState[] newArray(int size) {
+                        return new SavedState[size];
+                    }
+                };
+
+        /**
+         * Constructeur privé utilisé par la factory pour restaurer l'objet à partir du Parcel
+         * les données doivent être lues dans le parcel dans le même ordre que celui d'écriture
+         *
+         * @param source sérialisation des données sauvegardées
+         */
+        private SavedState(Parcel source) {
+            // lecture par le View
+            super(source);
+            // lecture spécifique Slider
+            sliderValue = source.readFloat();
+        }
+
+        /**
+         * Constructeur utilisé lors de la sauvegarde de l'état
+         *
+         * @param superState : éléments spécifiques au View
+         * @param value      : élément spécifique au slider
+         */
+        public SavedState(Parcelable superState, float value) {
+            super(superState);
+            sliderValue = value;
+        }
+
+        /**
+         * Construction du Parcel par adjonction de value
+         *
+         * @param out   parcel
+         * @param flags
+         */
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeFloat(sliderValue);
+        }
+    }
 }

@@ -73,7 +73,9 @@ public class BTConnectActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String item = (String) parent.getItemAtPosition(position);
-                Toast.makeText(BTConnectActivity.this, "Sélection : " + item, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(BTConnectActivity.this, "Sélection : " + item, Toast.LENGTH_SHORT).show();
+                String address = item.substring(item.length() - 17);//
+                RetourData(address, item);
             }
         });
 
@@ -81,7 +83,9 @@ public class BTConnectActivity extends AppCompatActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 String item = (String) parent.getItemAtPosition(position);
-                Toast.makeText(BTConnectActivity.this, "Sélection : " + item, Toast.LENGTH_SHORT).show();
+                //Toast.makeText(BTConnectActivity.this, "Sélection : " + item, Toast.LENGTH_SHORT).show();
+                String address = item.substring(item.length() - 17);//
+                RetourData(address, item);
             }
         });
 
@@ -139,5 +143,13 @@ public class BTConnectActivity extends AppCompatActivity {
 
         viewBTRecherche = findViewById(R.id.listView_appareils_decouverts);
         viewBTRecherche.setAdapter(itemsAdapter2);
+    }
+
+    private void RetourData(String BTadresse, String BTitem) {
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("BTAddress",BTadresse);
+        resultIntent.putExtra("BTDevice",BTitem);
+        setResult(RESULT_OK,resultIntent);
+        finish();
     }
 }
