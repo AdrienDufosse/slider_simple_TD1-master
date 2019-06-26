@@ -1,16 +1,24 @@
 package com.example.slider;
 
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.util.Log;
 
 import java.io.IOException;
+import java.util.UUID;
 
-public class BTManager {
+import static android.content.ContentValues.TAG;
 
+public class BTManager extends Transceiver{
+
+    //Classe interne : ConnectThread
     private class ConnectThread extends Thread {
         private final BluetoothSocket mmSocket;
         private final BluetoothDevice mmDevice;
+
+        private final UUID MY_UUID = UUID.fromString("00001101-0000-1000-8000-00805F9B34FB");
+        private final BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         public ConnectThread(BluetoothDevice device) {
             // Use a temporary object that is later assigned to mmSocket
@@ -61,4 +69,59 @@ public class BTManager {
         }
     }
 
+    private BluetoothDevice mBluetoothDevice;
+    private ConnectThread mThread_de_connexion;
+
+    private final BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+
+    public void manageMyConnectedSocket(BluetoothSocket mmSocket){
+        int a =1;
+    }
+
+    @Override
+    public void attachFrameProcessor() {
+
+    }
+
+    @Override
+    public void detachFrameProcessor() {
+
+    }
+
+    @Override
+    public void connect(Object device_adress) {
+        String device_adress_str = (String) device_adress;
+        mBluetoothDevice = mBluetoothAdapter.getRemoteDevice(device_adress_str);
+        try{
+            mThread_de_connexion = new ConnectThread(mBluetoothDevice);
+            mThread_de_connexion.run();
+        }
+        catch (Exception e){
+            Exception exception = e;
+            System.out.println(e);
+        }
+
+
+    }
+
+    @Override
+    public void getState() {
+
+    }
+
+    @Override
+    public void setState() {
+
+    }
+
+    @Override
+    public void stop() {
+
+    }
+
+    @Override
+    public void send() {
+
+    }
 }

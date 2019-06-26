@@ -36,6 +36,7 @@ public class BTConnectActivity extends AppCompatActivity {
     boolean youCanClick = false;
     ListView viewBTAppaire;
     ListView viewBTRecherche;
+    BluetoothDevice deviceBT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -94,7 +95,6 @@ public class BTConnectActivity extends AppCompatActivity {
     private final BroadcastReceiver ouverture_bluetooth = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-            BluetoothDevice deviceBT;
             String action = intent.getAction();
 
             switch (action) {
@@ -149,6 +149,7 @@ public class BTConnectActivity extends AppCompatActivity {
         Intent resultIntent = new Intent();
         resultIntent.putExtra("BTAddress",BTadresse);
         resultIntent.putExtra("BTDevice",BTitem);
+        //resultIntent.putExtra("realDevice", deviceBT);
         setResult(RESULT_OK,resultIntent);
         finish();
     }

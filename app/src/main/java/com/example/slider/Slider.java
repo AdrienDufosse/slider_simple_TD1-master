@@ -174,7 +174,7 @@ public class Slider extends View {
         setMeasuredDimension(width, height);
 
         //Initialisation de la valeur affichée à 50
-        mSliderChangeListener.onChange(50);
+        //mSliderChangeListener.onChange(50);
     }
 
 

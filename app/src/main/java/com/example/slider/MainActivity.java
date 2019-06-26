@@ -2,6 +2,7 @@ package com.example.slider;
 
 import android.Manifest;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Build;
@@ -31,7 +32,7 @@ public class MainActivity extends AppCompatActivity implements Slider.SliderChan
     TextView mTextView;
 
     private android.bluetooth.BluetoothAdapter mBluetoothAdapter;
-
+    private OscilloManager mOscilloManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,8 +143,14 @@ public class MainActivity extends AppCompatActivity implements Slider.SliderChan
         if (resultCode == RESULT_OK) {
             String adr_info = data.getStringExtra("BTAddress");
             String info = data.getStringExtra("BTDevice");
+            //BluetoothDevice realDevice = (BluetoothDevice) data.getIntExtra("realDevice");
             Toast.makeText(this,"Appareil : " + info, Toast.LENGTH_SHORT).show();
 
+            BTManager bluetoothManager = new BTManager();
+            mOscilloManager = new OscilloManager(bluetoothManager);
+
+            Object bt_adress_object = (Object) adr_info;
+            mOscilloManager.connect(bt_adress_object);
         }
         else {
             Toast.makeText(this,"fichtre, c'est vide", Toast.LENGTH_SHORT).show();
